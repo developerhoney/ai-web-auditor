@@ -8,13 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetUrl = urlInput.value.trim();
 
         if (!targetUrl) {
-            alert('Please enter a URL');
+            alert('Please enter a valid URL');
             return;
         }
 
         auditBtn.disabled = true;
         auditBtn.innerText = 'Analyzing...';
-        resultBox.innerHTML = '<p class="status">Extracting DOM, checking speed, and running AI heuristics...</p>';
+        resultBox.innerHTML = '<p class="status">Parsing DOM structure, benchmarking response speed, and querying AI insights...</p>';
 
         try {
             const response = await fetch('/api/audit', {
@@ -23,28 +23,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ url: targetUrl })
             });
 
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error(`Server error (${response.status}). Ensure server is restarted.`);
-            }
-
             const data = await response.json();
-            if (!data.success) throw new Error(data.error || 'Audit failed');
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || `Server returned error (${response.status})`);
+            }
 
             currentAuditData = data;
 
-            // Safe extraction using Optional Chaining (?.)
-            const score = data.metrics?.seoScore ?? 0;
-            const loadTime = data.metrics?.loadTimeMs ?? 'N/A';
-            const isHttps = data.metrics?.isHttps ? '✅ Enabled' : '❌ Insecure';
-            const title = data.seo?.title ?? 'N/A';
-            const metaDesc = data.seo?.metaDescription ?? 'N/A';
-            const h1Count = data.seo?.h1Count ?? 0;
-            const totalImgs = data.seo?.totalImages ?? 0;
-            const missingAlt = data.seo?.imagesMissingAlt ?? 0;
+            const metrics = data.metrics || {};
+            const seo = data.seo || {};
+
+            const score = metrics.seoScore ?? 0;
+            const loadTime = metrics.loadTimeMs ?? 'N/A';
+            const isHttps = metrics.isHttps ? '✅ Enabled' : '❌ Insecure';
+            const title = seo.title || 'N/A';
+            const metaDesc = seo.metaDescription || 'N/A';
+            const h1Count = seo.h1Count || 0;
+            const totalImgs = seo.totalImages || 0;
+            const missingAlt = seo.imagesMissingAlt || 0;
             const aiText = data.aiAnalysis || 'No AI insights generated.';
 
-            // Render UI safely
             resultBox.innerHTML = `
                 <div class="dashboard-grid">
                     <div class="card score-card">

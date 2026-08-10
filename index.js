@@ -3,12 +3,52 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const path = require('path');
+const http = require('http');
+const https = require('https');
 const { GoogleGenAI } = require('@google/genai');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+// Parse multi-keys from GEMINI_API_KEYS or single fallback GEMINI_API_KEY
+const rawKeys = process.env.GEMINI_API_KEYS || process.env.GEMINI_API_KEY || '';
+const apiKeys = rawKeys.split(',').map(k => k.trim()).filter(Boolean);
+
+let keyIndex = 0;
+
+function getNextAiClient() {
+    if (apiKeys.length === 0) return null;
+    const selectedKey = apiKeys[keyIndex];
+    keyIndex = (keyIndex + 1) % apiKeys.length;
+    return new GoogleGenAI({ apiKey: selectedKey });
+}
+
+async function generateAiInsights(prompt) {
+    if (apiKeys.length === 0) {
+        return 'No Gemini API keys found in Environment Variables.';
+    }
+
+    let lastError = null;
+
+    for (let attempts = 0; attempts < apiKeys.length; attempts++) {
+        try {
+            const ai = getNextAiClient();
+            const aiResponse = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+            });
+            return aiResponse.text;
+        } catch (err) {
+            console.warn(`[AI Key Rotation] Key attempt ${attempts + 1} failed. Failover to next key...`);
+            lastError = err;
+        }
+    }
+
+    return `AI analysis unavailable after failover attempts: ${lastError?.message || 'Rate limit reached'}`;
+}
+
+const httpAgent = new http.Agent({ maxHeaderSize: 131072 });
+const httpsAgent = new https.Agent({ maxHeaderSize: 131072 });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
@@ -24,10 +64,14 @@ app.post('/api/audit', async (req, res) => {
         const startTime = Date.now();
 
         const response = await axios.get(url, {
+            httpAgent,
+            httpsAgent,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9'
             },
-            timeout: 12000,
+            timeout: 15000,
+            maxRedirects: 5,
             validateStatus: () => true
         });
 
@@ -46,7 +90,6 @@ app.post('/api/audit', async (req, res) => {
 
         const isHttps = url.startsWith('https://');
 
-        // Score Calculation
         let seoScore = 100;
         if (title === 'No Title Found') seoScore -= 20;
         if (metaDescription === 'Missing Meta Description') seoScore -= 20;
@@ -56,47 +99,24 @@ app.post('/api/audit', async (req, res) => {
         if (loadTimeMs > 2000) seoScore -= 15;
         seoScore = Math.max(0, seoScore);
 
-        // AI Analysis
-        let aiAnalysis = 'AI API Key not configured in .env file.';
-        if (process.env.GEMINI_API_KEY) {
-            try {
-                const prompt = `Analyze this web page audit metadata and provide 3 quick bullet points for improvement:
-                URL: ${url}
-                Title: ${title}
-                Meta Description: ${metaDescription}
-                H1 Count: ${h1Tags.length}
-                Total Images: ${images.length} (Missing Alt: ${imagesMissingAlt})
-                Load Time: ${loadTimeMs}ms
-                HTTPS: ${isHttps}`;
+        const prompt = `Analyze this web page audit metadata and provide 3 quick bullet points for improvement:
+        URL: ${url}
+        Title: ${title}
+        Meta Description: ${metaDescription}
+        H1 Count: ${h1Tags.length}
+        Total Images: ${images.length} (Missing Alt: ${imagesMissingAlt})
+        Load Time: ${loadTimeMs}ms
+        HTTPS: ${isHttps}`;
 
-                const aiResponse = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
-                    contents: prompt,
-                });
-                aiAnalysis = aiResponse.text;
-            } catch (aiErr) {
-                aiAnalysis = 'AI analysis unavailable: ' + aiErr.message;
-            }
-        }
+        const aiAnalysis = await generateAiInsights(prompt);
 
-        // Standardized JSON Output
         return res.json({
             success: true,
-            url: url,
+            url,
             statusCode: response.status || 200,
-            metrics: {
-                seoScore: seoScore,
-                loadTimeMs: loadTimeMs,
-                isHttps: isHttps
-            },
-            seo: {
-                title: title,
-                metaDescription: metaDescription,
-                h1Count: h1Tags.length,
-                totalImages: images.length,
-                imagesMissingAlt: imagesMissingAlt
-            },
-            aiAnalysis: aiAnalysis
+            metrics: { seoScore, loadTimeMs, isHttps },
+            seo: { title, metaDescription, h1Count: h1Tags.length, totalImages: images.length, imagesMissingAlt },
+            aiAnalysis
         });
 
     } catch (error) {
