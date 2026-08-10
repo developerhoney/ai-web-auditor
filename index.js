@@ -34,7 +34,7 @@ async function generateAiInsights(prompt) {
         try {
             const ai = getNextAiClient();
             const aiResponse = await ai.models.generateContent({
-                model: 'gemini-1.5-flash',
+                model: 'gemini-1.5-flash', // Updated to 1.5-flash for compatibility
                 contents: prompt,
             });
             return aiResponse.text;
@@ -44,7 +44,11 @@ async function generateAiInsights(prompt) {
         }
     }
 
-    return `AI analysis unavailable after failover attempts: ${lastError?.message || 'Rate limit reached'}`;
+    // Backend logs ke liye real error save karein (Sirf aapko Render par dikhega)
+    console.error("[AI Error]:", lastError?.message || 'Rate limit reached');
+    
+    // Website users ko ye clean message dikhega (Security fix)
+    return "AI recommendations are temporarily unavailable due to high server load. Please try again in a few moments.";
 }
 
 const httpAgent = new http.Agent({ maxHeaderSize: 131072 });
