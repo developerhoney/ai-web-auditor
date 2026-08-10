@@ -1,0 +1,24 @@
+.env
+node_modules/
+```[cite: 1, 2, 3]
+
+---
+
+### Step 3: फ़ाइल को सेव करें (Save the file)
+* अपने कीबोर्ड पर `Ctrl + S` (Windows) या `Cmd + S` (Mac) दबाकर इस फ़ाइल को **Save** कर लें[cite: 1, 2, 3]।
+
+---
+
+### Step 4: जाँच करें (Verify)
+* जैसे ही आप `.gitignore` में `.env` लिखकर सेव करेंगे, VS Code के सोर्स कंट्रोल पैनल में `.env` फ़ाइल का नाम धुंधला (Grey) हो जाएगा[cite: 1, 2, 3]। इसका मतलब है कि Git अब इस फ़ाइल को ट्रैक नहीं करेगा और आपकी API Keys सुरक्षित रहेंगी[cite: 1, 2, 3]।
+
+---
+
+### Step 5: टर्मिनल में गिट कमांड्स चलाएं (Run Git commands in terminal)
+अब अपने VS Code का टर्मिनल खोलें और यह कमांड चलाएं[cite: 1, 2, 3]:
+
+```bash
+git add .
+git commit -m "Added .gitignore to protect keys"
+git push origin main
+```[cite: 1, 2, 3]
