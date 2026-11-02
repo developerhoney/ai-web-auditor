@@ -1,11 +1,11 @@
 :root {
-    --bg-dark: #0a0b10;
-    --card-bg: rgba(18, 20, 29, 0.7);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --primary-accent: #8b5cf6;
-    --secondary-accent: #3b82f6;
-    --text-main: #f3f4f6;
-    --text-muted: #9ca3af;
+    --bg-dark: #050505; /* Ekdum deep premium black */
+    --card-bg: rgba(15, 15, 15, 0.85); /* Dark translucent card background */
+    --border-color: rgba(234, 179, 8, 0.15); /* Subtle gold/yellow border */
+    --primary-accent: #eab308; /* Premium Yellow / Gold */
+    --secondary-accent: #f59e0b; /* Rich Amber */
+    --text-main: #fefefe;
+    --text-muted: #a3a3a3;
     --danger: #ef4444;
     --success: #10b981;
 }
@@ -33,7 +33,7 @@ body {
     position: absolute;
     width: 350px;
     height: 350px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+    background: radial-gradient(circle, rgba(234, 179, 8, 0.12) 0%, rgba(245, 158, 11, 0.04) 50%, transparent 70%);
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
@@ -54,13 +54,13 @@ body {
 }
 
 .badge {
-    background: rgba(139, 92, 246, 0.12);
+    background: rgba(234, 179, 8, 0.1);
     color: var(--primary-accent);
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(234, 179, 8, 0.3);
 }
 
 .header h1 {
@@ -86,7 +86,7 @@ body {
     backdrop-filter: blur(12px);
     border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
 .input-group {
@@ -96,7 +96,7 @@ body {
 
 input[type="url"] {
     flex: 1;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 14px 18px;
@@ -108,16 +108,16 @@ input[type="url"] {
 
 input[type="url"]:focus {
     border-color: var(--primary-accent);
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.25);
 }
 
 button {
     background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-    color: #fff;
+    color: #050505; /* Button text dark for high contrast on yellow */
     border: none;
     border-radius: 10px;
     padding: 14px 24px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: 0.3s;
     display: flex;
@@ -128,6 +128,7 @@ button {
 button:hover {
     opacity: 0.9;
     transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
 }
 
 .error-box {
@@ -171,7 +172,7 @@ button:hover {
 }
 
 .metric-card {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.015);
     border: 1px solid var(--border-color);
     padding: 16px;
     border-radius: 12px;
@@ -191,7 +192,7 @@ button:hover {
 }
 
 .insights-box {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
     padding: 16px;
     border-radius: 10px;
