@@ -3,27 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Web Infrastructure Auditor</title>
+    <title>AI Web Auditor | Ryzn Portfolio</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Web Infrastructure Auditor</h1>
-            <p>DOM Heuristics, Response Speed & AI Recommendations</p>
+    <div class="background-glow"></div>
+    
+    <main class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <span class="badge">AI Powered Utility</span>
+            <h1>AI Web <span class="gradient-text">Auditor</span></h1>
+            <p>Apni website ka URL daalein aur instant UI/UX, Performance aur SEO audit report paayein.</p>
         </header>
 
-        <main>
-            <div class="search-box">
-                <input type="text" id="url-input" placeholder="https://example.com" value="https://honeydev.indevs.in/">
-                <button id="audit-btn">Initialize Audit</button>
+        <!-- Input Form Section -->
+        <section class="audit-card">
+            <form id="auditForm" class="audit-form">
+                <div class="input-group">
+                    <input type="url" id="websiteUrl" placeholder="https://example.com" required autocomplete="off">
+                    <button type="submit" id="submitBtn">
+                        <span class="btn-text">Audit Web Page</span>
+                        <div class="spinner hidden" id="btnSpinner"></div>
+                    </button>
+                </div>
+            </form>
+            <div id="errorMessage" class="error-box hidden"></div>
+        </section>
+
+        <!-- Results Dashboard Section -->
+        <section id="resultsSection" class="results-container hidden">
+            <div class="results-header">
+                <h2>Audit Summary</h2>
+                <span id="targetUrlDisplay" class="target-url"></span>
             </div>
 
-            <div id="result-box" class="console">
-                <p class="status">Ready to evaluate web infrastructure...</p>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Overall Score</h3>
+                    <div id="overallScore" class="score-value">--</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Performance</h3>
+                    <div id="perfScore" class="score-value">--</div>
+                </div>
+                <div class="metric-card">
+                    <h3>SEO Status</h3>
+                    <div id="seoScore" class="score-value">--</div>
+                </div>
             </div>
-        </main>
-    </div>
+
+            <div class="report-details">
+                <h3>Detailed Insights</h3>
+                <div id="insightsContent" class="insights-box"></div>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
