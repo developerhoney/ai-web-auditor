@@ -1,66 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Web Auditor | Ryzn Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Web Auditor | Instant SEO & Performance Audit</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="background-glow"></div>
-    
-    <main class="container">
-        <!-- Header Section -->
-        <header class="header">
-            <span class="badge">AI Powered Utility</span>
-            <h1>AI Web <span class="gradient-text">Auditor</span></h1>
-            <p>Apni website ka URL daalein aur instant UI/UX, Performance aur SEO audit report paayein.</p>
-        </header>
+  <div class="background-glow"></div>
 
-        <!-- Input Form Section -->
-        <section class="audit-card">
-            <form id="auditForm" class="audit-form">
-                <div class="input-group">
-                    <input type="url" id="websiteUrl" placeholder="https://example.com" required autocomplete="off">
-                    <button type="submit" id="submitBtn">
-                        <span class="btn-text">Audit Web Page</span>
-                        <div class="spinner hidden" id="btnSpinner"></div>
-                    </button>
-                </div>
-            </form>
-            <div id="errorMessage" class="error-box hidden"></div>
-        </section>
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <span class="badge">AI Powered Utility</span>
+      <h1>AI Web <span class="gradient-text">Auditor</span></h1>
+      <p>Apni website ka URL daalein aur instant UI/UX, Performance aur SEO audit report paayein.</p>
+    </header>
 
-        <!-- Results Dashboard Section -->
-        <section id="resultsSection" class="results-container hidden">
-            <div class="results-header">
-                <h2>Audit Summary</h2>
-                <span id="targetUrlDisplay" class="target-url"></span>
-            </div>
+    <!-- Input Form -->
+    <section class="audit-card">
+      <form id="auditForm" class="audit-form">
+        <div class="input-group">
+          <input 
+            type="url" 
+            id="websiteUrl" 
+            placeholder="https://example.com" 
+            required 
+            autocomplete="off"
+          >
+          <button type="submit" id="submitBtn">
+            <span class="btn-text">Audit Web Page</span>
+            <div class="spinner hidden" id="btnSpinner"></div>
+          </button>
+        </div>
+      </form>
+      <div id="errorMessage" class="error-box hidden"></div>
+    </section>
 
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <h3>Overall Score</h3>
-                    <div id="overallScore" class="score-value">--</div>
-                </div>
-                <div class="metric-card">
-                    <h3>Performance</h3>
-                    <div id="perfScore" class="score-value">--</div>
-                </div>
-                <div class="metric-card">
-                    <h3>SEO Status</h3>
-                    <div id="seoScore" class="score-value">--</div>
-                </div>
-            </div>
+    <!-- Results -->
+    <section id="resultsSection" class="results-container hidden">
+      <div class="results-header">
+        <h2>Audit Summary</h2>
+        <span id="targetUrlDisplay" class="target-url"></span>
+      </div>
 
-            <div class="report-details">
-                <h3>Detailed Insights</h3>
-                <div id="insightsContent" class="insights-box"></div>
-            </div>
-        </section>
-    </main>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h3>Overall Score</h3>
+          <div id="overallScore" class="score-value">--</div>
+        </div>
+        <div class="metric-card">
+          <h3>Performance</h3>
+          <div id="perfScore" class="score-value">--</div>
+        </div>
+        <div class="metric-card">
+          <h3>SEO Status</h3>
+          <div id="seoScore" class="score-value">--</div>
+        </div>
+      </div>
 
-    <script src="script.js"></script>
+      <div class="report-details">
+        <h3>Detailed Insights</h3>
+        <div id="insightsContent" class="insights-box"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
