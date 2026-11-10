@@ -2,23 +2,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const auditForm = document.getElementById("auditForm");
     const websiteUrlInput = document.getElementById("websiteUrl");
     const submitBtn = document.getElementById("submitBtn");
+    const btnText = submitBtn.querySelector(".btn-text");
+    const btnSpinner = document.getElementById("btnSpinner");
     const errorMessage = document.getElementById("errorMessage");
     const resultsSection = document.getElementById("resultsSection");
 
     auditForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
-        const targetUrl = websiteUrlInput.value.trim();
+
+        let targetUrl = websiteUrlInput.value.trim();
         if (!targetUrl) return;
 
-        // UI Loading State
+        // Auto-add https:// if missing
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = "https://" + targetUrl;
+            websiteUrlInput.value = targetUrl;
+        }
+
+        // Loading state
         submitBtn.disabled = true;
-        submitBtn.innerText = "Auditing...";
+        if (btnText) btnText.textContent = "Auditing...";
+        if (btnSpinner) btnSpinner.classList.remove("hidden");
         errorMessage.classList.add("hidden");
         resultsSection.classList.add("hidden");
 
         try {
-            // Python Backend Endpoint
             const response = await fetch("/api/audit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -27,28 +35,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const data = await response.json();
 
-            if (!response.ok) {
-                // Front-end par API key details / technical backend trace kabhi na dikhayein
-                throw new Error(data.message || "Audit failed. Please check the URL and try again.");
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || data.message || "Audit failed. Please check the URL and try again.");
             }
 
-            // Populate Results Safely
-            document.getElementById("targetUrlDisplay").innerText = targetUrl;
-            document.getElementById("overallScore").innerText = data.score || "85/100";
-            document.getElementById("perfScore").innerText = data.performance || "90%";
-            document.getElementById("seoScore").innerText = data.seo || "Pass";
-            document.getElementById("insightsContent").innerText = data.summary || "Website structure is optimal with good load speed.";
+            // Correct mapping from backend response
+            const seoScore = data.metrics?.seoScore ?? 0;
+            const loadTime = data.metrics?.loadTimeMs ?? 0;
+            const isHttps = data.metrics?.isHttps ?? false;
+
+            // Performance score based on load time
+            let perfScore = 100;
+            if (loadTime > 3000) perfScore = 40;
+            else if (loadTime > 2000) perfScore = 60;
+            else if (loadTime > 1000) perfScore = 80;
+            else if (loadTime > 500) perfScore = 90;
+
+            document.getElementById("targetUrlDisplay").textContent = targetUrl;
+            document.getElementById("overallScore").textContent = `${seoScore}/100`;
+            document.getElementById("perfScore").textContent = `${perfScore}%`;
+            document.getElementById("seoScore").textContent = seoScore >= 70 ? "Pass" : "Needs Work";
+
+            // Show AI insights + key metrics
+            const insights = data.aiAnalysis || "No AI insights available right now.";
+            const details = [
+                `Title: ${data.seo?.title || "—"}`,
+                `Meta Description: ${data.seo?.metaDescription || "—"}`,
+                `H1 tags: ${data.seo?.h1Count ?? 0}`,
+                `Images: ${data.seo?.totalImages ?? 0} (missing alt: ${data.seo?.imagesMissingAlt ?? 0})`,
+                `Load time: ${loadTime} ms`,
+                `HTTPS: ${isHttps ? "Yes" : "No"}`,
+                "",
+                insights
+            ].join("\n");
+
+            document.getElementById("insightsContent").textContent = details;
 
             resultsSection.classList.remove("hidden");
         } catch (err) {
-            // General clean error message to hide sensitive technical details
-            errorMessage.innerText = err.message.includes("Failed to fetch") 
-                ? "Server connection error. Please try again later." 
+            errorMessage.textContent = err.message.includes("Failed to fetch")
+                ? "Server connection error. Please try again later."
                 : err.message;
             errorMessage.classList.remove("hidden");
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = "Audit Web Page";
+            if (btnText) btnText.textContent = "Audit Web Page";
+            if (btnSpinner) btnSpinner.classList.add("hidden");
         }
     });
 });
